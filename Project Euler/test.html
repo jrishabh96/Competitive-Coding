@@ -1,0 +1,62 @@
+
+
+<body>
+<div id="ok"></div>
+<div id="mylove" style="width:1000px;height:500px;background:#F9EECF;border:1px dotted black;text-align:center" contenteditable="true">
+  This text can be edited by the user.
+</div>
+
+</body>
+<script type="text/javascript">
+	
+	(function() {
+    'use strict';
+    JSON.flatten = function(data) {
+        var result = {};
+        function recurse (cur, prop) {
+            if (Object(cur) !== cur) {
+                result[prop] = cur;
+            } else if (Array.isArray(cur)) {
+                for(var i=0, l=cur.length; i<l; i++)
+                    recurse(cur[i], prop + "[" + i + "]");
+                if (l == 0)
+                    result[prop] = [];
+            } else {
+                var isEmpty = true;
+                for (var p in cur) {
+                    isEmpty = false;
+                    recurse(cur[p], prop ? prop+"."+p : p);
+                }
+                if (isEmpty && prop)
+                    result[prop] = {};
+            }
+        }
+        recurse(data, "");
+        return result;
+    };
+
+    function CopyToClipboard(strToCpy) {
+        let textarea = document.createElement('textarea');
+        textarea.id = 't';
+        textarea.style.height = 0;
+        document.body.appendChild(textarea);
+        textarea.value = strToCpy;
+        let selector = document.querySelector('#t');
+        selector.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+    
+    var response = document.getElementById("mylove").innerText;
+    var reponseJson = JSON.parse(response);
+    var flatJson = JSON.flatten(reponseJson.Output);
+    var flatStringyJson = JSON.stringify(flatJson, null, "\t");
+    CopyToClipboard(flatStringyJson);
+    var fadeTime = 500;
+
+    alert(flatJson);
+
+})();
+
+
+</script>
